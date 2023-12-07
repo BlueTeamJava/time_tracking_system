@@ -1,0 +1,17 @@
+.task-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .task-item {
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .task-item div {
+    margin-right: 20px;
+  }
+  
