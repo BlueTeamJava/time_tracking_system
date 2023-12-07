@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './TaskDetails.css';
+import API_BASE_URL from './apiConfig';
 
 const TaskDetails = () => {
   const { id } = useParams();
@@ -15,7 +16,7 @@ const TaskDetails = () => {
     const fetchTask = async () => {
       try {
         const authToken = localStorage.getItem('token');
-        const response = await axios.get(`http://localhost:8080/time_tracking_system/task?id=${id}`, {
+        const response = await axios.get(`${API_BASE_URL}/task?id=${id}`, {
           headers: {
             Authorization: `${authToken}`,
           },
@@ -37,7 +38,7 @@ const TaskDetails = () => {
   const handleSave = async () => {
     try {
       const authToken = localStorage.getItem('token');
-      await axios.put(`http://localhost:8080/time_tracking_system/task?id=${id}`, editedTask, {
+      await axios.put(`${API_BASE_URL}/task?id=${id}`, editedTask, {
         headers: {
           Authorization: `${authToken}`,
           'Content-Type': 'application/json',

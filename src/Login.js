@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from './apiConfig';
 import './Login.css';
 
@@ -6,6 +7,7 @@ const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,7 +26,7 @@ const Login = () => {
 
         localStorage.setItem('token', authToken);
 
-        window.location.href = '/home';
+        navigate('/home');
       } else {
         const errorData = await response.text();
         setError(errorData);
