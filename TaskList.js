@@ -1,11 +1,8 @@
-// TaskList.js
-
 import React, { useState, useEffect } from 'react';
 
 const TaskList = () => {
   const [tasks, setTasks] = useState([]);
   const [error, setError] = useState(null);
-  const userId = 123; // Replace with the actual user ID
 
   useEffect(() => {
     const fetchTasks = async () => {
