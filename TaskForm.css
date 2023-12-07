@@ -1,0 +1,9 @@
+.form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    top: 50px; /* Adjust this value to set the distance from the top */
+    left: 50%;
+    transform: translateX(-50%);
+  }

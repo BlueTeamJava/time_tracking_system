@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import './TaskDetails.css';
 
 const TaskDetails = () => {
   const { id } = useParams();
@@ -81,7 +82,7 @@ const TaskDetails = () => {
   };
 
   return (
-    <div>
+    <div className="task-details">
       <h2>Task Details for Task ID: {id}</h2>
       {error && <div>Error: {error}</div>}
       {task && (

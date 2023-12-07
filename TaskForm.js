@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import API_BASE_URL from './apiConfig';
+import './TaskForm.css'
 
 const TaskForm = () => {
   const [description, setDescription] = useState('');
@@ -11,7 +13,7 @@ const TaskForm = () => {
 
     try {
         const authToken = localStorage.getItem('token');
-        const response = await fetch(`/task`, {
+        const response = await fetch(`${API_BASE_URL}/task`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -37,9 +39,9 @@ const TaskForm = () => {
   };
 
   return (
-    <div>
-      <h2>Create Task</h2>
+    <div className="form-container">
       <form onSubmit={handleSubmit}>
+      <h2>Create Task</h2>
         <label>
           Description:
           <input
@@ -56,8 +58,10 @@ const TaskForm = () => {
             onChange={(e) => setHours(e.target.value)}
           />
         </label>
-        <button type="submit">Create Task</button>
-        <button onClick={handleBack}>Back to Home</button>
+        <div className="button-group">
+          <button type="submit">Create Task</button>
+          <button onClick={handleBack}>Back to Home</button>
+        </div>
       </form>
     </div>
   );

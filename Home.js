@@ -14,7 +14,7 @@ const Home = () => {
     const fetchTasks = async () => {
       try {
         const authToken = localStorage.getItem('token');
-        const response = await axios.get(`/list`, {
+        const response = await axios.get(`${API_BASE_URL}/list`, {
           headers: {
             Authorization: `${authToken}`,
           },
@@ -33,7 +33,7 @@ const Home = () => {
   const handleDelete = async (taskId) => {
     try {
       const authToken = localStorage.getItem('token');
-      await axios.delete(`/list?id=${taskId}`, {
+      await axios.delete(`${API_BASE_URL}/list?id=${taskId}`, {
         headers: {
           Authorization: `${authToken}`,
         },
@@ -54,29 +54,40 @@ const Home = () => {
 
 
   return (
-    <div>
-      <h2>Task List</h2>
-      {loading && <div>Loading...</div>}
-      {error && <div>Error: {error}</div>}
-      {tasks.length === 0 && !loading && <div>List is empty</div>}
-      <ul className="task-list">
+    <div className="container">
+    <h2>Task List</h2>
+    {loading && <div>Loading...</div>}
+    {error && <div>Error: {error}</div>}
+    {tasks.length === 0 && !loading && <div>List is empty</div>}
+    <table className="task-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Description</th>
+          <th>Hours</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
         {tasks.map((task) => (
-          <li key={task.id} className="task-item">
-            <div>Date: {task.date}</div>
-            <div>Description:{' '}
-              <Link to={`/task/${task.id}`}>
-                {task.description}
-              </Link></div>
-            <div>Hours: {task.hours}</div>
-            <button onClick={() => handleDelete(task.id)}>Delete</button>
-          </li>
+          <tr key={task.id}>
+            <td>{task.date}</td>
+            <td>
+              <Link to={`/task/${task.id}`}>{task.description}</Link>
+            </td>
+            <td>{task.hours}</td>
+            <td>
+              <button onClick={() => handleDelete(task.id)}>Delete</button>
+            </td>
+          </tr>
         ))}
-      </ul>
-      <Link to="/create-task">
-        <button>Create Task</button>
-      </Link>
-      <button onClick={handleLogout}>Logout</button>
-    </div>
+      </tbody>
+    </table>
+    <Link to="/create-task">
+      <button>Create Task</button>
+    </Link>
+    <button onClick={handleLogout}>Logout</button>
+  </div>
   );
 };
 

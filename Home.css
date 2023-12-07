@@ -1,17 +1,56 @@
-.task-list {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .task-item {
-    border: 1px solid #ccc;
-    margin-bottom: 10px;
-    padding: 10px;
-    display: flex;
-    flex-direction: row;
-  }
-  
-  .task-item div {
-    margin-right: 20px;
-  }
-  
+/* Home.css */
+
+/* Container styles */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.task-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.task-table th,
+.task-table td {
+  border: 1px solid #ccc;
+  padding: 8px;
+}
+
+.task-table th {
+  background-color: #f0f0f0;
+}
+
+.task-table td {
+  text-align: center;
+}
+
+.task-table a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.task-table a:hover {
+  text-decoration: underline;
+}
+
+.task-table button {
+  padding: 6px 10px;
+  cursor: pointer;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.task-table button:hover {
+  background-color: #c82333;
+}

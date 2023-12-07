@@ -1,0 +1,55 @@
+/* Add your own styles for the TaskDetails component */
+.task-details {
+    margin: 20px auto;
+    padding: 20px;
+    width: 80%;
+    max-width: 600px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+  }
+  
+  .task-details h2 {
+    text-align: center;
+  }
+  
+  .task-details .error {
+    color: red;
+    margin-bottom: 10px;
+  }
+  
+  .task-details .details-container {
+    margin-bottom: 20px;
+  }
+  
+  .task-details label {
+    display: block;
+    margin-bottom: 10px;
+  }
+  
+  .task-details input[type='date'],
+  .task-details input[type='text'] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+  }
+  
+  .task-details button {
+    padding: 8px 16px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  
+  .task-details button:last-child {
+    margin-right: 0;
+  }
+  
+  .task-details .edit-buttons {
+    margin-top: 20px;
+    text-align: center;
+  }
+  

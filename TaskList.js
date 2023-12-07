@@ -7,7 +7,7 @@ const TaskList = () => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await fetch(`/list?user_id=${userId}`, {
+        const response = await fetch(`${API_BASE_URL}/list?user_id=${userId}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

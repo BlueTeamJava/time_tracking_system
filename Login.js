@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import API_BASE_URL from './apiConfig';
+import './Login.css';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -10,7 +11,7 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch(`/login`, {
+      const response = await fetch(`${API_BASE_URL}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -34,29 +35,29 @@ const Login = () => {
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      {error && <div>{error}</div>}
-      <form onSubmit={handleSubmit}>
-        <label>
-          Username:
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </label>
-        <label>
-          Password:
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </label>
-        <button type="submit">Login</button>
-      </form>
-    </div>
+    <div className="login-container">
+    {error && <div>{error}</div>}
+    <form onSubmit={handleSubmit}>
+    <h2>Login</h2>
+      <label>
+        Username:
+        <input
+          type="text"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+      </label>
+      <label>
+        Password:
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+      </label>
+      <button type="submit">Login</button>
+    </form>
+  </div>
   );
 };
 
