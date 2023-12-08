@@ -1,6 +1,6 @@
 package com.tproject.services;
 
-public interface ScheduledCsvService {
+public interface ScheduledService {
     void startScheduler();
     void stopScheduler();
 }

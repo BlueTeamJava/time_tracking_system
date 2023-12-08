@@ -1,6 +1,6 @@
 package com.tproject.services.impl;
 
-import com.tproject.services.ScheduledCsvService;
+import com.tproject.services.ScheduledService;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -11,13 +11,24 @@ import java.util.TimerTask;
 
 //can be invoked in Dispatcher like
 
-//        ScheduledCsvServiceImpl scheduledCsvServiceImpl = new ScheduledCsvServiceImpl();
-//        ScheduledCsvServiceImpl.startScheduler();
+//        ScheduledCsvServiceImpl.getInstance().startScheduler();
 
 
-public class ScheduledCsvServiceImpl implements ScheduledCsvService {
+public class ScheduledCsvServiceImpl implements ScheduledService {
     private Timer timer;
-
+    private static ScheduledCsvServiceImpl instance;
+    public static ScheduledCsvServiceImpl getInstance() {
+        ScheduledCsvServiceImpl localInstance = instance;
+        if (localInstance == null) {
+            synchronized (ScheduledCsvServiceImpl.class) {
+                localInstance = instance;
+                if (localInstance == null) {
+                    instance = localInstance = new ScheduledCsvServiceImpl();
+                }
+            }
+        }
+        return localInstance;
+    }
     @Override
     public void startScheduler() {
         timer = new Timer();
@@ -28,7 +39,7 @@ public class ScheduledCsvServiceImpl implements ScheduledCsvService {
                 calendar.setTime(new Date());
                 int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
                 if (dayOfWeek != Calendar.SATURDAY && dayOfWeek != Calendar.SUNDAY) {
-                    buildFile();
+                    //TODO: logic for mail sending. inside it - call the CsvBuildServiceImpl.getInstance().buildFile( -path- )
                 }
             }
         }, getNextExecutionTime(), 24 * 60 * 60 * 1000); // every working day. time is set in getNextExecutionTime() method
@@ -42,36 +53,36 @@ public class ScheduledCsvServiceImpl implements ScheduledCsvService {
     }
 
 
-    private void buildFile(){
-
-
-        //example data, must be replaced
-
-//        user   | name     | descr    | time
-//        -----------------------------------
-//        user1  | task1-1  | descr1-1 | time1-1
-//               | task1-2  | descr1-2 | time1-2
-//        user2  | task2-1  | descr2-1 | time2-1
-//               | task2-2  | descr2-2 | time2-2
-
-        Object[][] data = {
-                {"user1", "task", "Email"},
-                {"user2", "30", "johndoe@example.com"},
-                {"user3", "25", "janesmith@example.com"}
-        };
-
-        try (FileWriter writer = new FileWriter("output.csv")) {
-            for (Object[] rowData : data) {
-                for (Object field : rowData) {
-                    writer.append(field.toString());
-                    writer.append(",");
-                }
-                writer.append("\n");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    private void buildFile(){
+//
+//
+//        //example data, must be replaced
+//
+////        user   | name     | descr    | time
+////        -----------------------------------
+////        user1  | task1-1  | descr1-1 | time1-1
+////               | task1-2  | descr1-2 | time1-2
+////        user2  | task2-1  | descr2-1 | time2-1
+////               | task2-2  | descr2-2 | time2-2
+//
+//        Object[][] data = {
+//                {"user1", "task", "Email"},
+//                {"user2", "30", "johndoe@example.com"},
+//                {"user3", "25", "janesmith@example.com"}
+//        };
+//
+//        try (FileWriter writer = new FileWriter("output.csv")) {
+//            for (Object[] rowData : data) {
+//                for (Object field : rowData) {
+//                    writer.append(field.toString());
+//                    writer.append(",");
+//                }
+//                writer.append("\n");
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     private Date getNextExecutionTime() {
         // current date and time

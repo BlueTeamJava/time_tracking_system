@@ -6,6 +6,8 @@ import com.tproject.exception.CustomSQLException;
 import com.tproject.exception.NonExistentUserException;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -114,7 +116,7 @@ public class UserDaoImpl implements UserDao<User, Integer> {
         return credOpt;
     }*/
 
-    /*@Override
+    @Override
     public Collection<User> getAll()  throws CustomSQLException{
         Collection<User> users = new ArrayList<>();
         String sql = "SELECT * FROM users ORDER BY user_id";
@@ -137,7 +139,7 @@ public class UserDaoImpl implements UserDao<User, Integer> {
         }
 
         return users;
-    }*/
+    }
 
     /*@Override
     public Optional<Integer> saveUser(User User)  throws CustomSQLException{

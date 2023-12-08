@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface UserDao<T, I> {
     Optional<T> getUserIdByUsername(String username) throws SQLException, NonExistentUserException;
     Optional<T> findUser(String login) throws SQLException, NonExistentUserException;
-    //Collection<T> getAll();
+    Collection<T> getAll();
     //Optional<I> saveUser(T t);
     //User updateUser(T t);
     //boolean deleteUser(int id);
