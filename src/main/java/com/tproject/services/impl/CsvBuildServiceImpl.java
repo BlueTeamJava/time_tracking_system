@@ -80,15 +80,16 @@ public class CsvBuildServiceImpl implements CsvBuildService {
                 List<Task> userTasks = userInfo.getUserTaskList();
 
                 if (!userTasks.isEmpty()) {
-                    writer.append(username).append(","); // username - 1 column
+                    writer.append(username); // username - 1 column
 
                     // User task list iteration
                     for (Task task : userTasks) {
                         // if today's date
                         if (task.getDate().equals(LocalDate.now())) {
                             writer.append(",").append(task.getDescription()).append(","); // task description - 2 column
-                            writer.append(String.valueOf(task.getHours())).append("\n"); // task time - 3 column
+                            writer.append(String.valueOf(task.getHours())); // task time - 3 column
                         }
+                        writer.append("\n");
                     }
                 }
             }
