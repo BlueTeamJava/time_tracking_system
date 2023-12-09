@@ -4,10 +4,10 @@ import com.tproject.dao.UserDao;
 import com.tproject.entity.User;
 import com.tproject.exception.CustomSQLException;
 import com.tproject.exception.NonExistentUserException;
-import org.apache.commons.codec.digest.DigestUtils;
 
 import java.sql.*;
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -116,10 +116,10 @@ public class UserDaoImpl implements UserDao<User, Integer> {
         return credOpt;
     }*/
 
-    /*@Override
+    @Override
     public Collection<User> getAll()  throws CustomSQLException{
         Collection<User> users = new ArrayList<>();
-        String sql = "SELECT * FROM users ORDER BY user_id";
+        String sql = "SELECT * FROM users ORDER BY id";
 
         try (Connection conn = JdbcConnection.getInstance().getConnection();
              Statement statement = conn.createStatement();
@@ -139,14 +139,14 @@ public class UserDaoImpl implements UserDao<User, Integer> {
         }
 
         return users;
-    }*/
+    }
 
-    @Override
+    /*@Override
     public Optional<Integer> saveUser(User User)  throws CustomSQLException{
         String message = "The User to be added should not be null";
         User nonNullUser = Objects.requireNonNull(User, message);
         String sql = "INSERT INTO "
-                + "users(username, password) "
+                + "Users(username, password) "
                 + "VALUES(?, ?)";
         Optional<Integer> generatedId = Optional.empty();
 
@@ -177,7 +177,7 @@ public class UserDaoImpl implements UserDao<User, Integer> {
         }
 
         return generatedId;
-    }
+    }*/
 
     /*@Override
     public User updateUser(User user)  throws CustomSQLException{
