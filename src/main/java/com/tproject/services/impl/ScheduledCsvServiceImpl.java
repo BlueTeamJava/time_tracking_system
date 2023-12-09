@@ -1,5 +1,6 @@
 package com.tproject.services.impl;
 
+import com.tproject.mailer.GMailer;
 import com.tproject.services.ScheduledService;
 
 import java.io.FileWriter;
@@ -39,7 +40,12 @@ public class ScheduledCsvServiceImpl implements ScheduledService {
                 calendar.setTime(new Date());
                 int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
                 if (dayOfWeek != Calendar.SATURDAY && dayOfWeek != Calendar.SUNDAY) {
-                    //TODO: logic for mail sending. inside it - call the CsvBuildServiceImpl.getInstance().buildFile( -path- )
+                    try {
+                        new GMailer().sendMail();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    //TODO: refactor GMailer into singletone in order to to multiply instances
                 }
             }
         }, getNextExecutionTime(), 24 * 60 * 60 * 1000); // every working day. time is set in getNextExecutionTime() method
@@ -52,37 +58,6 @@ public class ScheduledCsvServiceImpl implements ScheduledService {
         }
     }
 
-
-//    private void buildFile(){
-//
-//
-//        //example data, must be replaced
-//
-////        user   | name     | descr    | time
-////        -----------------------------------
-////        user1  | task1-1  | descr1-1 | time1-1
-////               | task1-2  | descr1-2 | time1-2
-////        user2  | task2-1  | descr2-1 | time2-1
-////               | task2-2  | descr2-2 | time2-2
-//
-//        Object[][] data = {
-//                {"user1", "task", "Email"},
-//                {"user2", "30", "johndoe@example.com"},
-//                {"user3", "25", "janesmith@example.com"}
-//        };
-//
-//        try (FileWriter writer = new FileWriter("output.csv")) {
-//            for (Object[] rowData : data) {
-//                for (Object field : rowData) {
-//                    writer.append(field.toString());
-//                    writer.append(",");
-//                }
-//                writer.append("\n");
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     private Date getNextExecutionTime() {
         // current date and time

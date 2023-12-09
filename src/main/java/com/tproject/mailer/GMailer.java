@@ -56,7 +56,7 @@ public class GMailer {
         return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
     }
 
-    private void sendMail() throws Exception {
+    public void sendMail() throws Exception {
         // Create the email content
         String subject = "Daily 'Blue Java team' report";
 
@@ -104,6 +104,7 @@ public class GMailer {
         }
     }
 
+
     private File getFile() {
         byte[] fileBytes = csvBuildService.createFile();
 
@@ -121,7 +122,7 @@ public class GMailer {
         }
     }
 
-    public static void main(String[] args) throws Exception{
-        new GMailer().sendMail();
-    }
+//    public static void main(String[] args) throws Exception{
+//        new GMailer().sendMail();
+//    }
 }
