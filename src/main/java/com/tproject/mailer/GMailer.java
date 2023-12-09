@@ -13,15 +13,17 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.model.Message;
+import com.tproject.services.impl.CsvBuildServiceImpl;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import javax.mail.internet.MimeMultipart;
+import java.io.*;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.Properties;
 import java.util.Set;
 
@@ -29,7 +31,7 @@ import static com.google.api.services.gmail.GmailScopes.GMAIL_SEND;
 import static javax.mail.Message.RecipientType.TO;
 
 public class GMailer {
-
+    private CsvBuildServiceImpl csvBuildService = CsvBuildServiceImpl.getInstance();
     private static final String TEST_EMAIL = "blue.team.java@gmail.com";
     private final Gmail service;
 
@@ -54,21 +56,30 @@ public class GMailer {
         return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
     }
 
-    private void sendMail(String subject, String message) throws Exception {
-
+    private void sendMail() throws Exception {
         // Create the email content
-        String messageSubject = "Test message";
-        String bodyText = "lorem ipsum.";
+        String subject = "Daily 'Blue Java team' report";
 
         // Encode as MIME message
         Properties props = new Properties();
         Session session = Session.getDefaultInstance(props, null);
+
         MimeMessage email = new MimeMessage(session);
         email.setFrom(new InternetAddress(TEST_EMAIL));
-        email.addRecipient(TO,
-                new InternetAddress(TEST_EMAIL));
+        email.addRecipient(TO, new InternetAddress(TEST_EMAIL));
         email.setSubject(subject);
-        email.setText(message);
+
+        MimeMultipart multipart = new MimeMultipart();
+
+        MimeBodyPart attachment = new MimeBodyPart();
+        attachment.attachFile(this.getFile());
+
+        MimeBodyPart message = new MimeBodyPart();
+        message.setContent("<h3>Date: " + LocalDate.now().toString() + "</h3>", "text/html");
+
+        multipart.addBodyPart(attachment);
+        multipart.addBodyPart(message);
+        email.setContent(multipart);
 
         // Encode and wrap the MIME message into a gmail message
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -93,9 +104,24 @@ public class GMailer {
         }
     }
 
-    public static void main(String[] args) throws Exception{
-        new GMailer().sendMail("A new message", "Hello World");
+    private File getFile() {
+        byte[] fileBytes = csvBuildService.createFile();
+
+        try {
+            File file = File.createTempFile("report", ".csv");
+
+            try (FileOutputStream fos = new FileOutputStream(file)){
+                fos.write(fileBytes);
+            }
+
+            return file;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
-
+    public static void main(String[] args) throws Exception{
+        new GMailer().sendMail();
+    }
 }
