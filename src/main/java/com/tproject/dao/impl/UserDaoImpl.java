@@ -119,7 +119,7 @@ public class UserDaoImpl implements UserDao<User, Integer> {
     @Override
     public Collection<User> getAll()  throws CustomSQLException{
         Collection<User> users = new ArrayList<>();
-        String sql = "SELECT * FROM users ORDER BY user_id";
+        String sql = "SELECT * FROM users ORDER BY id";
 
         try (Connection conn = JdbcConnection.getInstance().getConnection();
              Statement statement = conn.createStatement();
