@@ -10,11 +10,6 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
-//can be invoked in Dispatcher like
-
-//        ScheduledCsvServiceImpl.getInstance().startScheduler();
-
-
 public class ScheduledCsvServiceImpl implements ScheduledService {
     private Timer timer;
     private static ScheduledCsvServiceImpl instance;
@@ -66,7 +61,7 @@ public class ScheduledCsvServiceImpl implements ScheduledService {
 
         // set as 19.00 UTC
         calendar.set(Calendar.HOUR_OF_DAY, 14);
-        calendar.set(Calendar.MINUTE, 35);
+        calendar.set(Calendar.MINUTE, 50);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
 
