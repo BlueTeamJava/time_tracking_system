@@ -17,7 +17,7 @@ public class JdbcConnection {
 
     private JdbcConnection() {
         try {
-            Class.forName("");
+            Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
             LOGGER.log(Level.SEVERE, null, e);
         }
