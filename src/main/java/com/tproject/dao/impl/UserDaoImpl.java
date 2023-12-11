@@ -148,7 +148,7 @@ public class UserDaoImpl implements UserDao<User, Integer> {
         String message = "The User to be added should not be null";
         User nonNullUser = Objects.requireNonNull(User, message);
         String sql = "INSERT INTO "
-                + "Users(username, password) "
+                + "users(username, password) "
                 + "VALUES(?, ?)";
         Optional<Integer> generatedId = Optional.empty();
 
