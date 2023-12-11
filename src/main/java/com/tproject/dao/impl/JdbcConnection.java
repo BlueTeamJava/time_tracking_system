@@ -8,8 +8,8 @@ import java.util.logging.Logger;
 
 public class JdbcConnection {
 
-    private static String URL = "jdbc:mysql://192.168.1.11:3306/time_log_db";
-    private static String USER = "test";
+    private static String URL = "jdbc:mysql://35.188.219.33:3306/time_log_db";
+    private static String USER = "user";
     private static String PASSWORD = "Adminadmin123!";
     private static final Logger LOGGER =
             Logger.getLogger(JdbcConnection.class.getName());
@@ -17,7 +17,7 @@ public class JdbcConnection {
 
     private JdbcConnection() {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName("");
         } catch (ClassNotFoundException e) {
             LOGGER.log(Level.SEVERE, null, e);
         }
