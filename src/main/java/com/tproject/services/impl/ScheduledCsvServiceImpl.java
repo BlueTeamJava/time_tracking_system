@@ -61,7 +61,7 @@ public class ScheduledCsvServiceImpl implements ScheduledService {
 
         // set as 19.00 UTC
         calendar.set(Calendar.HOUR_OF_DAY, 15);
-        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.MINUTE, 25);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
 
