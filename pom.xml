@@ -167,6 +167,12 @@
       <artifactId>poi</artifactId>
       <version>5.2.5</version>
     </dependency>
+    <dependency>
+      <groupId>com.itextpdf</groupId>
+      <artifactId>html2pdf</artifactId>
+      <version>5.0.2</version>
+    </dependency>
+
 
   </dependencies>
 
