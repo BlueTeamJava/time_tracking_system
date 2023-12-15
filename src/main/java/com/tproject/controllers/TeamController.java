@@ -5,12 +5,18 @@ import com.tproject.annotations.Controller;
 import com.tproject.annotations.HttpMethod;
 import com.tproject.annotations.RequestMapping;
 import com.tproject.dto.TeamDto;
+import com.tproject.exception.CustomSQLException;
+import com.tproject.services.impl.JWTServiceImpl;
 import com.tproject.services.impl.TeamServiceImpl;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.Collection;
 
 @Controller
@@ -30,19 +36,24 @@ public class TeamController {
 
     @RequestMapping(url="/teamslist",method = HttpMethod.GET)
     public HttpServletResponse getAllTeams(HttpServletRequest req, HttpServletResponse res) throws IOException {
-        System.out.println("TEams List");
-        Collection<TeamDto> teams = teamService.getAllTeams();
+        try {
+            Jws<Claims> jws = JWTServiceImpl.getInstance().verifyUserToken(req.getHeader("Authorization").replace("Bearer ", ""));
+            Collection<TeamDto> teams = teamService.getAllTeams();
 
-        res.setContentType("application/json");
-        PrintWriter out = res.getWriter();
+            res.setContentType("application/json");
+            PrintWriter out = res.getWriter();
 
-        if (teams.isEmpty()){
-            out.println("[]");}
-        else{
-            out.println(jsonMapper.writeValueAsString(teams));
+            if (teams.isEmpty()) {
+                out.println("[]");
+            } else {
+                out.println(jsonMapper.writeValueAsString(teams));
+            }
+
+            return res;
+
+        }catch (JwtException e){
+            return sendError(401,"Unauthorized user",res);
         }
-
-        return res;
 
     }
     @RequestMapping(url="",method = HttpMethod.DELETE)
