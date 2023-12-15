@@ -39,7 +39,7 @@ public class UserProfileDaoImpl implements UserProfileDao {
 
     //get by user id
     @Override
-    public Optional<UserProfile> getUserProfile(int id) throws SQLException {
+    public Optional<UserProfile> getUserProfile(int id) throws CustomSQLException {
         Optional<UserProfile> userProfileOpt = Optional.empty();
         String sql = "SELECT * FROM user_profile WHERE id = ?";
         try (Connection conn = JdbcConnection.getInstance().getConnection();
