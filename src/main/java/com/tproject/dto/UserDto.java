@@ -1,5 +1,6 @@
 package com.tproject.dto;
 
+import com.tproject.entity.Roles;
 import lombok.*;
 
 
@@ -14,4 +15,5 @@ public class UserDto {
     private int id;
     private String username;
     private String password;
+    private Roles role;
 }
