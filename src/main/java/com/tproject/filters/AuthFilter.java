@@ -67,8 +67,7 @@ public class AuthFilter extends HttpFilter {
             }
 
             Roles role = Roles.valueOf(claims.getBody().get("role", String.class));
-            System.out.println("ROLE==================="+role);
-            System.out.println("method==================="+request.getMethod());
+
             //restrict actions for default user
             System.out.println("comparing: " + (role == Roles.ADMIN));
             if(role.equals(Roles.ADMIN) & !request.getMethod().equals("GET")){
