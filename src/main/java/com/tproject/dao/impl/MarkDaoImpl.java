@@ -6,6 +6,7 @@ import com.tproject.exception.CustomSQLException;
 
 import java.util.*;
 import java.sql.*;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,7 +41,7 @@ public class MarkDaoImpl implements MarkDao {
 
 
     @Override
-    public Optional<Mark> findMarkById(int id) throws SQLException {
+    public Optional<Mark> findMarkById(int id) throws CustomSQLException {
         Optional<Mark> markOpt = Optional.empty();
         String sql = "SELECT * FROM marks WHERE id = ?";
 
@@ -63,7 +64,7 @@ public class MarkDaoImpl implements MarkDao {
     }
 
     @Override
-    public Optional<Mark> findMarkByUserDate(int userId, java.util.Date date) throws SQLException {
+    public Optional<Mark> findMarkByUserDate(int userId, Date date) throws CustomSQLException {
         Optional<Mark> markOpt = Optional.empty();
         String sql = "SELECT * FROM marks WHERE user_id = ? AND date = ?";
 
@@ -185,7 +186,7 @@ public class MarkDaoImpl implements MarkDao {
     }
 
     @Override
-    public boolean deleteTMark(int id) {
+    public boolean deleteMark(int id) {
         String sql = "DELETE FROM marks WHERE id = ?";
 
         try (Connection conn = JdbcConnection.getInstance().getConnection();
