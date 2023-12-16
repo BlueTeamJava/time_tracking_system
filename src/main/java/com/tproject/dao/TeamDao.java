@@ -9,7 +9,7 @@ public interface TeamDao {
 
 
 
-    Collection<Team> getAllTeams();
+    Collection<Team> getAllTeams() throws SQLException;
 
     boolean deleteTeam(int teamId) throws SQLException;
 
