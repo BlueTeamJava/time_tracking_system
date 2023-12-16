@@ -34,6 +34,7 @@ public class AuthController {
     public HttpServletResponse login(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         Credentials anonymous = jsonMapper.readValue(req.getReader(), Credentials.class);
+        anonymous.setRole(userService.findUserByUsername(anonymous.getUsername()).getRole());
 
         if (userService.verifyUser(anonymous.getUsername(),anonymous.getPassword())) {
             JWTServiceImpl jwtService = JWTServiceImpl.getInstance();

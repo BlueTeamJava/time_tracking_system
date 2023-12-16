@@ -1,6 +1,7 @@
 package com.tproject.dao.impl;
 
 import com.tproject.dao.UserDao;
+import com.tproject.entity.Roles;
 import com.tproject.entity.User;
 import com.tproject.exception.CustomSQLException;
 import com.tproject.exception.NonExistentUserException;
@@ -42,6 +43,7 @@ public class UserDaoImpl implements UserDao<User, Integer> {
         user.setId(resultSet.getInt("id"));
         user.setUsername(resultSet.getString("username"));
         user.setPassword(resultSet.getString("password"));
+        user.setRole(Roles.valueOf(resultSet.getString("role")));
         return user;
     }
 
