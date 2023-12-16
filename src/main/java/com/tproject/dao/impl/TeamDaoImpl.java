@@ -6,6 +6,8 @@ import com.tproject.entity.Team;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class TeamDaoImpl implements TeamDao {
 
@@ -24,6 +26,9 @@ public class TeamDaoImpl implements TeamDao {
         return localInstance;
     }
 
+    private static final Logger LOGGER =
+            Logger.getLogger(TaskDaoImpl.class.getName());
+
 
 
 
@@ -35,17 +40,22 @@ public class TeamDaoImpl implements TeamDao {
     }
 
     @Override
-   public Collection<Team> getAllTeams(){
+   public Collection<Team> getAllTeams() throws SQLException {
 
         Collection<Team> teams = new ArrayList<>();
         String query = "SELECT * FROM teams";
         Connection con =null;
+        Statement statement=null;
         ResultSet resultSet=null;
+
 
         try{
             con = JdbcConnection.getInstance().getConnection();
-            Statement statement = con.createStatement();
-             resultSet = statement.executeQuery(query);
+            con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+            con.setAutoCommit(false);
+            statement = con.createStatement();
+            resultSet = statement.executeQuery(query);
+            con.commit();
 
              while(resultSet.next()){
                  teams.add(composeTeam(resultSet));
@@ -53,10 +63,10 @@ public class TeamDaoImpl implements TeamDao {
 
         }catch (SQLException e){
             System.out.println("While fetching All teams "+e.getMessage());
+        } finally {
+            assert con != null;
+            con.close();
         }
-
-
-
         return teams;
     }
 
@@ -65,21 +75,21 @@ public class TeamDaoImpl implements TeamDao {
 
         String query ="Delete FROM teams Where id = ?";
         Connection con=null;
-        ResultSet resultSet = null;
+        PreparedStatement statement=null;
 
         try{
             con = JdbcConnection.getInstance().getConnection();
-            PreparedStatement statement = con.prepareStatement(query);
+            statement = con.prepareStatement(query);
             statement.setInt(1,id);
             int rowDeleted = statement.executeUpdate();
+            con.commit();
             System.out.println(rowDeleted+"Team deleted succesfully");
             return rowDeleted>0;
         } catch (SQLException e){
             System.out.println(e.getMessage());
         }finally {
-            if(con != null){
-                con.close();
-            }
+            closeResources(con,statement);
+
         }
         return false;
     }
@@ -87,18 +97,71 @@ public class TeamDaoImpl implements TeamDao {
     public boolean createTeam(Team team){
         String query = "INSERT INTO teams (team_name) VALUES (?)";
         Connection con =null;
+        PreparedStatement statement=null;
         int rowsEffected;
 
         try{
-            PreparedStatement statement = con.prepareStatement(query);
+            con = JdbcConnection.getInstance().getConnection();
+            statement = con.prepareStatement(query);
             statement.setString(1,team.getTeamName());
             rowsEffected = statement.executeUpdate();
+            con.commit();
             return rowsEffected >0;
         }catch (SQLException e){
             System.out.println(e.getMessage());
+        }finally {
+            closeResources(con,statement);
         }
 
         return false;
+    }
+
+
+    public void closeResources(Connection connection, PreparedStatement statement){
+
+        try {
+            if (statement != null && !statement.isClosed()) {
+                statement.close();
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error closing PreparedStatement: " + e.getMessage());
+        }
+
+        try {
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error closing Connection: " + e.getMessage());
+        }
+
+    }
+
+
+    public void closeResources(Connection connection, PreparedStatement statement, ResultSet resultSet) {
+        try {
+            if (resultSet != null && !resultSet.isClosed()) {
+                resultSet.close();
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error closing ResultSet: " + e.getMessage());
+        }
+
+        try {
+            if (statement != null && !statement.isClosed()) {
+                statement.close();
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error closing PreparedStatement: " + e.getMessage());
+        }
+
+        try {
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error closing Connection: " + e.getMessage());
+        }
     }
 
 }
