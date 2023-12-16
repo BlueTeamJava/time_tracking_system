@@ -1,5 +1,6 @@
 package com.tproject.filters;
 
+import com.tproject.entity.Roles;
 import com.tproject.services.impl.JWTServiceImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -64,6 +65,21 @@ public class AuthFilter extends HttpFilter {
                 out.println("Bad token");
                 return;
             }
+
+            Roles role = Roles.valueOf(claims.getBody().get("role", String.class));
+            System.out.println("ROLE==================="+role);
+            System.out.println("method==================="+request.getMethod());
+            //restrict actions for default user
+            System.out.println("comparing: " + (role == Roles.ADMIN));
+            if(role.equals(Roles.ADMIN) & !request.getMethod().equals("GET")){
+                response.setContentType("application/json");
+                response.setStatus(403);
+                PrintWriter out = response.getWriter();
+                out.println("Access denied");
+                return;
+            }
+
+
             chain.doFilter(request, response);
         }
     }
