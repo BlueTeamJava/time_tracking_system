@@ -40,8 +40,8 @@ public class TeamServiceImpl implements TeamService {
     public Collection<TeamDto> getAllTeams(){
         try {
             return mapper.teamToDtoCollection(teamDao.getAllTeams());
-        } catch (CustomSQLException e) {
-            throw e;
+        }  catch (SQLException e) {
+            throw new RuntimeException(e);
         }
 
     }
