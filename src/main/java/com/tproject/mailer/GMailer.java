@@ -104,7 +104,6 @@ public class GMailer {
         }
     }
 
-
     private File getFile() {
         byte[] fileBytes = csvBuildService.createFile();
 
@@ -121,8 +120,4 @@ public class GMailer {
             return null;
         }
     }
-
-//    public static void main(String[] args) throws Exception{
-//        new GMailer().sendMail();
-//    }
 }

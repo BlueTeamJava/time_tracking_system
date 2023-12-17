@@ -11,6 +11,7 @@ public class JdbcConnection {
     private static String URL = "jdbc:mysql://35.188.219.33:3306/time_log_db";
     private static String USER = "user";
     private static String PASSWORD = "Adminadmin123!";
+
     private static final Logger LOGGER =
             Logger.getLogger(JdbcConnection.class.getName());
     private static JdbcConnection connection;
