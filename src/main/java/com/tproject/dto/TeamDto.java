@@ -10,5 +10,6 @@ import lombok.*;
 public class TeamDto {
     int id;
     String teamName;
+    int teamLeadId;
 
 }
