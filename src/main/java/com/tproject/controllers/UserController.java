@@ -6,13 +6,15 @@ import com.tproject.annotations.HttpMethod;
 import com.tproject.annotations.RequestMapping;
 import com.tproject.dto.UserDto;
 import com.tproject.exception.CustomSQLException;
+import com.tproject.services.impl.JWTServiceImpl;
 import com.tproject.services.impl.UserServiceImpl;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Collection;
 import java.util.Optional;
 
 @Controller
@@ -60,7 +62,7 @@ public class UserController {
 //        }
 //    }
 //
-    @RequestMapping(url = "/workstation", method = HttpMethod.POST)
+    @RequestMapping(url = "/user", method = HttpMethod.POST)
     public HttpServletResponse saveUser(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         UserDto creatingUserDto = jsonMapper.readValue(req.getReader(), UserDto.class);
         try {
@@ -70,14 +72,27 @@ public class UserController {
                 resp.setStatus(201);
                 return resp;
             } else {
-                //not sure code 500 is OK here
                 return sendError(500, "Something went wrong", resp);
             }
         } catch (CustomSQLException e) {
             return sendError(500, e.getMessage(), resp);
         }
-
     }
+
+    @RequestMapping(url = "/user", method = HttpMethod.GET)
+    public HttpServletResponse getRole(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try {
+            Jws<Claims> jws = JWTServiceImpl.getInstance().verifyUserToken(req.getHeader("Authorization").replace("Bearer ", ""));
+            String userRole = jws.getBody().get("role", String.class);
+            resp.setContentType("application/json");
+            PrintWriter out = resp.getWriter();
+            out.println(jsonMapper.writeValueAsString(userRole));
+            return resp;
+        } catch (CustomSQLException e) {
+            return sendError(500, e.getMessage(), resp);
+        }
+    }
+
 
 //    @RequestMapping(url = "/workstation", method = HttpMethod.PUT)
 //    public HttpServletResponse updateUser(HttpServletRequest req, HttpServletResponse resp) throws IOException {

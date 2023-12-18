@@ -1,19 +1,21 @@
 package com.tproject.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tproject.annotations.Controller;
 import com.tproject.annotations.HttpMethod;
 import com.tproject.annotations.RequestMapping;
-import com.tproject.dto.UserDto;
 import com.tproject.dto.UserProfileDto;
 import com.tproject.exception.CustomSQLException;
 import com.tproject.services.impl.UserProfileServiceImpl;
+import io.jsonwebtoken.JwtException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.Optional;
-
+@Controller
 public class UserProfileController {
 
     private final ObjectMapper jsonMapper = new ObjectMapper();
@@ -50,6 +52,28 @@ public class UserProfileController {
         }
     }
 
+    @RequestMapping(url = "/profilelist", method = HttpMethod.GET)
+    public HttpServletResponse getAllProfiles(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+
+        try {
+            Collection<UserProfileDto> profiles = userProfileService.getAllUserProfiles();
+            resp.setContentType("application/json");
+            PrintWriter out = resp.getWriter();
+
+            if (profiles.isEmpty())
+                out.println("[]");
+            else
+                out.println(jsonMapper.writeValueAsString(profiles));
+
+            return resp;
+        } catch (JwtException e) {
+            return sendError(401, "Unauthorized: Invalid token", resp);
+        } catch (CustomSQLException e) {
+            return sendError(500, e.getMessage(), resp);
+        }
+    }
+
+
     @RequestMapping(url = "/profile", method = HttpMethod.POST)
     public HttpServletResponse saveUserProfile(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         UserProfileDto creatingUserProfileDto = jsonMapper.readValue(req.getReader(), UserProfileDto.class);
@@ -74,6 +98,7 @@ public class UserProfileController {
         if (req.getParameter("id") != null) {
 
             UserProfileDto updatingUserProfileDto = jsonMapper.readValue(req.getReader(), UserProfileDto.class);
+            updatingUserProfileDto.setId(Integer.parseInt(req.getParameter("id")));
 
             if (userProfileService.getUserProfile(Integer.parseInt(req.getParameter("id"))) != null) {
                 userProfileService.updateUserProfile(updatingUserProfileDto);

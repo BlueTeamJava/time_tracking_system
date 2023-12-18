@@ -73,7 +73,7 @@ public class UserDaoImpl implements UserDao<User, Integer> {
 
     @Override
     public Optional<User> findUser(String login)  throws CustomSQLException, NonExistentUserException{
-        Optional<User> userOpt = Optional.empty();
+        Optional<User> userOpt;
         String sql = "SELECT * FROM users WHERE username = ?";
 
         try (Connection conn = JdbcConnection.getInstance().getConnection();
@@ -146,29 +146,33 @@ public class UserDaoImpl implements UserDao<User, Integer> {
     }
 
     @Override
-    public Optional<Integer> saveUser(User User)  throws CustomSQLException{
+    public Optional<Integer> saveUser(User user)  throws CustomSQLException{
         String message = "The User to be added should not be null";
-        User nonNullUser = Objects.requireNonNull(User, message);
-        String sql = "INSERT INTO "
-                + "users(username, password) "
-                + "VALUES(?, ?)";
+        User nonNullUser = Objects.requireNonNull(user, message);
+        String userSql = "INSERT INTO users(username, password) VALUES (?, ?)";
+        String profileSql = "INSERT INTO user_profile(user_id, name) VALUES (?, ?)";
         Optional<Integer> generatedId = Optional.empty();
 
         try (Connection conn = JdbcConnection.getInstance().getConnection();
-             PreparedStatement statement =
-                     conn.prepareStatement(
-                             sql,
-                             Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement userStatement = conn.prepareStatement(
+                     userSql,
+                     Statement.RETURN_GENERATED_KEYS);
+             PreparedStatement profileStatement = conn.prepareStatement(profileSql)) {
 
-            statement.setString(1, nonNullUser.getUsername());
-            statement.setString(2, DigestUtils.sha256Hex(nonNullUser.getPassword()));
+            userStatement.setString(1, nonNullUser.getUsername());
+            userStatement.setString(2, DigestUtils.sha256Hex(nonNullUser.getPassword()));
 
-            int numberOfInsertedRows = statement.executeUpdate();
+            int numberOfInsertedRows = userStatement.executeUpdate();
 
             if (numberOfInsertedRows > 0) {
-                try (ResultSet resultSet = statement.getGeneratedKeys()) {
+                try (ResultSet resultSet = userStatement.getGeneratedKeys()) {
                     if (resultSet.next()) {
                         generatedId = Optional.of(resultSet.getInt(1));
+
+                        int userId = resultSet.getInt(1);
+                        profileStatement.setInt(1, userId);
+                        profileStatement.setString(2, nonNullUser.getName());
+                        profileStatement.executeUpdate();
                     }
                 }
             }

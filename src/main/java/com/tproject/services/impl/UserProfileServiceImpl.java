@@ -8,6 +8,7 @@ import com.tproject.mappers.UserProfileMapper;
 import com.tproject.services.UserProfileService;
 import org.mapstruct.factory.Mappers;
 
+import java.util.Collection;
 import java.util.Optional;
 
 public class UserProfileServiceImpl implements UserProfileService {
@@ -48,6 +49,16 @@ public class UserProfileServiceImpl implements UserProfileService {
         try {
             UserProfile userProfile = mapper.dtoToUserProfile(userProfileDto);
             return userProfileDao.saveUserProfile(userProfile);
+        } catch (CustomSQLException e) {
+            throw e;
+        }
+    }
+
+    @Override
+    public Collection<UserProfileDto> getAllUserProfiles() throws CustomSQLException {
+        try {
+            Collection<UserProfile> userProfiles = userProfileDao.getAllUserProfiles();
+            return mapper.userProfileToDtoCollection(userProfiles);
         } catch (CustomSQLException e) {
             throw e;
         }

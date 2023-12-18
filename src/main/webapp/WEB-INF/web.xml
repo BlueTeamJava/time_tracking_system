@@ -3,19 +3,11 @@
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
-    <filter>
-        <filter-name>CORSFilter</filter-name>
-        <filter-class>com.tproject.filters.CorsFilter</filter-class>
-    </filter>
-
-    <filter-mapping>
-        <filter-name>CORSFilter</filter-name>
-        <url-pattern>/*</url-pattern> <!-- This allows the filter to be applied to all URL patterns -->
-    </filter-mapping>
 
     <listener>
         <listener-class>com.tproject.servlets.StartupContextListener</listener-class>
     </listener>
+
 
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>

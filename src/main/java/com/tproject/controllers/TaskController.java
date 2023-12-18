@@ -60,9 +60,9 @@ public class TaskController {
                 out.println(jsonMapper.writeValueAsString(tasks));
 
             return resp;
-        }  catch (JwtException e) {
+        } catch (JwtException e) {
             return sendError(401, "Unauthorized: Invalid token", resp);
-        }catch (CustomSQLException e) {
+        } catch (CustomSQLException e) {
             return sendError(500, e.getMessage(), resp);
         }
     }

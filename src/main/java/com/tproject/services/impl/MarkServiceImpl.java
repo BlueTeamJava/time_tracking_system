@@ -10,6 +10,7 @@ import org.mapstruct.factory.Mappers;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 import java.util.Optional;
 
 public class MarkServiceImpl implements MarkService {
@@ -55,9 +56,27 @@ public class MarkServiceImpl implements MarkService {
     }
 
     @Override
+    public Collection<MarkDto> getMarkByDate(Date date) throws CustomSQLException {
+        try {
+            return mapper.markToDtoCollection(markDao.getAllMarksByDate(date));
+        } catch (CustomSQLException e) {
+            throw e;
+        }
+    }
+
+    @Override
     public Collection<MarkDto> getAllUserMarks(int userId) throws CustomSQLException {
         try {
             return mapper.markToDtoCollection(markDao.getAllMarksFromUser(userId));
+        } catch (CustomSQLException e) {
+            throw e;
+        }
+    }
+
+    @Override
+    public Map<Integer, Integer> getTotalMarksByUsers() throws CustomSQLException {
+        try {
+            return markDao.getTotalMarksByUsers();
         } catch (CustomSQLException e) {
             throw e;
         }

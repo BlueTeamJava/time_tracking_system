@@ -6,7 +6,6 @@ import com.tproject.exception.CustomSQLException;
 import com.tproject.exception.NonExistentEntityException;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
@@ -117,7 +116,7 @@ public class TaskDaoImpl implements TaskDao{
 
             statement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             statement.setInt(1, task.getUserId());
-            statement.setDate(2, Date.valueOf(LocalDate.now()));
+            statement.setDate(2, Date.valueOf(task.getDate()));
             statement.setFloat(3, task.getHours());
             statement.setString(4, task.getDescription());
 

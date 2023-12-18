@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.SQLException;
 import java.util.Collection;
 
 @Controller
@@ -33,11 +32,14 @@ public class TeamController {
         return resp;
     }
 
+    private boolean validateTeamDto(TeamDto teamDto) {
 
-    @RequestMapping(url="/teamslist",method = HttpMethod.GET)
+        return teamDto != null && teamDto.getId()!=0 && !teamDto.getTeamName().isEmpty();
+    }
+
+    @RequestMapping(url="/teams",method = HttpMethod.GET)
     public HttpServletResponse getAllTeams(HttpServletRequest req, HttpServletResponse res) throws IOException {
         try {
-            Jws<Claims> jws = JWTServiceImpl.getInstance().verifyUserToken(req.getHeader("Authorization").replace("Bearer ", ""));
             Collection<TeamDto> teams = teamService.getAllTeams();
 
             res.setContentType("application/json");
@@ -56,7 +58,7 @@ public class TeamController {
         }
 
     }
-    @RequestMapping(url="",method = HttpMethod.DELETE)
+    @RequestMapping(url="/teams",method = HttpMethod.DELETE)
     public HttpServletResponse deleteTeam(HttpServletRequest req, HttpServletResponse res){
         int teamId = Integer.parseInt(req.getParameter("id"));
        if(teamService.deleteTeam(teamId)){
@@ -67,11 +69,13 @@ public class TeamController {
            return res;
        }
     }
-    @RequestMapping(url="",method = HttpMethod.POST)
-    public HttpServletResponse createTeam(HttpServletRequest req, HttpServletResponse res){
-        TeamDto teamDto = new TeamDto();
-        teamDto.setTeamName(req.getParameter("teamName"));
+    @RequestMapping(url="/teams",method = HttpMethod.POST)
+    public HttpServletResponse createTeam(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        String requestData = req.getReader().lines().reduce("", String::concat);
+        ObjectMapper jsonMapper = new ObjectMapper();
+        TeamDto teamDto = jsonMapper.readValue(requestData, TeamDto.class);
 
+        System.out.println(teamDto.getTeamName());
         if(teamService.createTeam(teamDto)){
             res.setStatus(204);
             return res;
@@ -82,7 +86,27 @@ public class TeamController {
 
     }
 
+    @RequestMapping(url = "/teams", method = HttpMethod.PUT)
+    public HttpServletResponse updateTeam(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try {
+            String teamId = req.getParameter("id");
 
-
+            if (teamId != null) {
+                String teamData = req.getReader().lines().reduce("", String::concat);
+                TeamDto updatedTeam = jsonMapper.readValue(teamData, TeamDto.class);
+                if (validateTeamDto(updatedTeam)) {
+                    teamService.updateTeam(updatedTeam);
+                    resp.setStatus(200);
+                } else {
+                    return sendError(400, "Invalid team data", resp);
+                }
+                return resp;
+            } else {
+                return sendError(400, "Team ID not specified", resp);
+            }
+        } catch (CustomSQLException e) {
+            return sendError(500, e.getMessage(), resp);
+        }
+    }
 
 }

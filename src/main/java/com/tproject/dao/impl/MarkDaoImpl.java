@@ -36,6 +36,7 @@ public class MarkDaoImpl implements MarkDao {
         mark.setUserProfileId(resultSet.getInt("user_id"));
         mark.setScore(resultSet.getFloat("score"));
         mark.setDate(resultSet.getDate("date"));
+        mark.setDescription(resultSet.getString("description"));
         return mark;
     }
 
@@ -87,7 +88,53 @@ public class MarkDaoImpl implements MarkDao {
         return markOpt;
     }
 
+    @Override
+    public Collection<Mark> getAllMarksByDate(Date date) {
+        Collection<Mark> marks = new ArrayList<>();
+        String sql = "SELECT * FROM marks WHERE date = ? ORDER BY id";
 
+        try (Connection conn = JdbcConnection.getInstance().getConnection();
+             PreparedStatement statement = conn.prepareStatement(sql)) {
+            java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+            statement.setDate(1, sqlDate);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                Mark mark = composeMark(resultSet);
+
+                marks.add(mark);
+
+                LOGGER.log(Level.INFO, "Found {0} in database", mark);
+            }
+
+        } catch (SQLException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+            throw new CustomSQLException("getAllMarksByDate - SQL Exception");
+        }
+
+        return marks;
+    }
+
+    @Override
+    public Map<Integer, Integer> getTotalMarksByUsers() throws CustomSQLException{
+        Map<Integer, Integer> totalMarksByUser = new HashMap<>();
+        String sql = "SELECT user_id, SUM(score) AS totalMarks FROM marks GROUP BY user_id";
+
+        try (Connection conn = JdbcConnection.getInstance().getConnection();
+             PreparedStatement statement = conn.prepareStatement(sql)) {
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                int userId = resultSet.getInt("user_id");
+                int totalMarks = resultSet.getInt("totalMarks");
+                totalMarksByUser.put(userId, totalMarks);
+            }
+        } catch (SQLException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+            throw new CustomSQLException("getTotalMarksByUserId - SQL Exception");
+        }
+
+        return totalMarksByUser;
+    }
     @Override
     public Collection<Mark> getAllMarksFromUser(int userId) {
         Collection<Mark> marks = new ArrayList<>();
@@ -118,8 +165,8 @@ public class MarkDaoImpl implements MarkDao {
         String message = "The User to be added should not be null";
         Mark nonNullMark = Objects.requireNonNull(mark, message);
         String sql = "INSERT INTO "
-                + "marks(user_id, score, date) "
-                + "VALUES(?, ?, ?)";
+                + "marks(user_id, score, date, description) "
+                + "VALUES(?, ?, ?, ?)";
         Optional<Integer> generatedId = Optional.empty();
 
         try (Connection conn = JdbcConnection.getInstance().getConnection();
@@ -130,7 +177,8 @@ public class MarkDaoImpl implements MarkDao {
 
             statement.setInt(1, nonNullMark.getUserProfileId());
             statement.setFloat(2, nonNullMark.getScore());
-            statement.setDate(3, new java.sql.Date(nonNullMark.getDate().getTime()));   //check
+            statement.setDate(3, new java.sql.Date(nonNullMark.getDate().getTime()));
+            statement.setString(4, nonNullMark.getDescription());
 
             int numberOfInsertedRows = statement.executeUpdate();
 

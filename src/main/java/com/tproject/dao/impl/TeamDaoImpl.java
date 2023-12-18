@@ -36,7 +36,7 @@ public class TeamDaoImpl implements TeamDao {
         Team team = new Team();
         team.setId(resultSet.getInt("id"));
         team.setTeamName(resultSet.getString("team_name"));
-        team.setTeamLeadId(resultSet.getInt("team_lead_id"));
+        team.setTeamLeadId(resultSet.getInt("team_lead"));
         return team;
     }
 
@@ -52,8 +52,8 @@ public class TeamDaoImpl implements TeamDao {
 
         try{
             con = JdbcConnection.getInstance().getConnection();
-            con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
             con.setAutoCommit(false);
+            con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
             statement = con.createStatement();
             resultSet = statement.executeQuery(query);
             con.commit();
@@ -72,6 +72,32 @@ public class TeamDaoImpl implements TeamDao {
     }
 
     @Override
+    public Team updateTeam(Team team) throws SQLException {
+        String sql = "UPDATE teams SET team_name = ?, team_lead = ? WHERE id = ?";
+        Connection conn = null;
+        PreparedStatement statement = null;
+
+        try {
+            conn = JdbcConnection.getInstance().getConnection();
+            conn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+            conn.setAutoCommit(false);
+
+            statement = conn.prepareStatement(sql);
+            statement.setString(1, team.getTeamName());
+            statement.setInt(2, team.getTeamLeadId());
+            statement.setInt(3, team.getId());
+            int rowsUpdated = statement.executeUpdate();
+
+            conn.commit();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            closeResources(conn, statement, null);
+        }
+        return team;
+    }
+
+    @Override
     public boolean deleteTeam(int id) throws SQLException {
 
         String query ="Delete FROM teams Where id = ?";
@@ -80,12 +106,15 @@ public class TeamDaoImpl implements TeamDao {
 
         try{
             con = JdbcConnection.getInstance().getConnection();
+            con.setAutoCommit(false);
             statement = con.prepareStatement(query);
             statement.setInt(1,id);
             int rowDeleted = statement.executeUpdate();
-            con.commit();
-            System.out.println(rowDeleted+"Team deleted succesfully");
-            return rowDeleted>0;
+            if (rowDeleted > 0) {
+                resetUserTeamIds(con, id);
+                con.commit();
+                return true;
+            }
         } catch (SQLException e){
             System.out.println(e.getMessage());
         }finally {
@@ -100,9 +129,10 @@ public class TeamDaoImpl implements TeamDao {
         Connection con =null;
         PreparedStatement statement=null;
         int rowsEffected;
-
+        System.out.println(team.getTeamName());
         try{
             con = JdbcConnection.getInstance().getConnection();
+            con.setAutoCommit(false);
             statement = con.prepareStatement(query);
             statement.setString(1,team.getTeamName());
             rowsEffected = statement.executeUpdate();
@@ -117,6 +147,21 @@ public class TeamDaoImpl implements TeamDao {
         return false;
     }
 
+    private void resetUserTeamIds(Connection con, int deletedTeamId) throws SQLException {
+        String updateQuery = "UPDATE user_profile SET team_id = null where team_id = ?";
+        PreparedStatement updateStatement = null;
+
+        try {
+            updateStatement = con.prepareStatement(updateQuery);
+            updateStatement.setInt(1, deletedTeamId);
+            int rowsUpdated = updateStatement.executeUpdate();
+            System.out.println(rowsUpdated + " User profiles updated");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            closeResources(null, updateStatement);
+        }
+    }
 
     public void closeResources(Connection connection, PreparedStatement statement){
 

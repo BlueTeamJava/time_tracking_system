@@ -7,6 +7,6 @@ import lombok.*;
 @Setter
 public class Team {
     private int id;
-    String teamName;
-    int teamLeadId;
+    private String teamName;
+    private int teamLeadId;
 }

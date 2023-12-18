@@ -9,6 +9,6 @@ import java.util.Collection;
 public interface TeamMapper {
     TeamDto teamToDto(Team team);
 
-    Team DtoToTeam(TeamDto teamDto);
+    Team dtoToTeam(TeamDto teamDto);
     Collection<TeamDto> teamToDtoCollection(Collection<Team> teamCollection);
 }

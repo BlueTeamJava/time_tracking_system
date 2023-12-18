@@ -1,10 +1,8 @@
 package com.tproject.services.impl;
 
-import com.tproject.dao.TeamDao;
 import com.tproject.dao.impl.TeamDaoImpl;
 import com.tproject.dto.TeamDto;
 import com.tproject.exception.CustomSQLException;
-import com.tproject.mappers.TaskMapper;
 import com.tproject.mappers.TeamMapper;
 import com.tproject.services.TeamService;
 import org.mapstruct.factory.Mappers;
@@ -18,8 +16,8 @@ public class TeamServiceImpl implements TeamService {
 
     private static TeamServiceImpl instance;
     TeamServiceImpl(){
-        TeamDaoImpl.getInstance();
-        Mappers.getMapper(TeamMapper.class);
+        teamDao = TeamDaoImpl.getInstance();
+        mapper = Mappers.getMapper(TeamMapper.class);
     }
 
 
@@ -59,7 +57,18 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
+    public TeamDto updateTeam(TeamDto teamDto) {
+        try {
+            return mapper.teamToDto(teamDao.updateTeam(mapper.dtoToTeam(teamDto)));
+        } catch (CustomSQLException e) {
+            throw e;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public boolean createTeam(TeamDto team) {
-            return teamDao.createTeam(mapper.DtoToTeam(team));
+            return teamDao.createTeam(mapper.dtoToTeam(team));
     }
 }

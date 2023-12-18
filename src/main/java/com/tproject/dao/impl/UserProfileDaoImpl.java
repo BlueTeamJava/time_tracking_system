@@ -5,8 +5,7 @@ import com.tproject.entity.UserProfile;
 import com.tproject.exception.CustomSQLException;
 
 import java.sql.*;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,7 +30,7 @@ public class UserProfileDaoImpl implements UserProfileDao {
 
     private UserProfile composeUserProfile(ResultSet resultSet) throws SQLException {
         UserProfile userProfile = new UserProfile();
-        userProfile.setId(resultSet.getInt("id"));
+        userProfile.setId(resultSet.getInt("user_id"));
         userProfile.setTeamId(resultSet.getInt("team_id"));
         userProfile.setName(resultSet.getString("name"));
         return userProfile;
@@ -41,7 +40,7 @@ public class UserProfileDaoImpl implements UserProfileDao {
     @Override
     public Optional<UserProfile> getUserProfile(int id) throws CustomSQLException {
         Optional<UserProfile> userProfileOpt = Optional.empty();
-        String sql = "SELECT * FROM user_profile WHERE id = ?";
+        String sql = "SELECT * FROM user_profile WHERE user_id = ?";
         try (Connection conn = JdbcConnection.getInstance().getConnection();
              PreparedStatement statement = conn.prepareStatement(sql)) {
             statement.setInt(1, id);
@@ -58,6 +57,27 @@ public class UserProfileDaoImpl implements UserProfileDao {
             throw new CustomSQLException("findUserProfile - SQL Exception");
         }
         return userProfileOpt;
+    }
+
+    @Override
+    public Collection<UserProfile> getAllUserProfiles() throws CustomSQLException {
+        Collection<UserProfile> userProfiles = new ArrayList<>();
+        String sql = "SELECT * FROM user_profile";
+        try (Connection conn = JdbcConnection.getInstance().getConnection();
+             Statement statement = conn.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql)) {
+
+            while (resultSet.next()) {
+                UserProfile userProfile = composeUserProfile(resultSet);
+                userProfiles.add(userProfile);
+            }
+
+            LOGGER.log(Level.INFO, "Found {0} profiles in the database", userProfiles.size());
+        } catch (SQLException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+            throw new CustomSQLException("getAllUserProfiles - SQL Exception");
+        }
+        return userProfiles;
     }
 
 
@@ -103,17 +123,12 @@ public class UserProfileDaoImpl implements UserProfileDao {
     public UserProfile updateUserProfile(UserProfile userProfile) {
         String message = "The user profile to be updated should not be null";
         UserProfile nonNullUserProfile = Objects.requireNonNull(userProfile, message);
-        String sql = "UPDATE user_profile "
-                + "SET "
-                + "team_id = ?, "
-                + "name = ?, "
-                + "WHERE "
-                + "id = ?";
+        String sql = "UPDATE user_profile SET team_id = ?, name = ? WHERE user_id = ?";
 
         try (Connection conn = JdbcConnection.getInstance().getConnection();
              PreparedStatement statement = conn.prepareStatement(sql)) {
 
-
+            System.out.println(nonNullUserProfile);
             statement.setInt(1, nonNullUserProfile.getTeamId());
             statement.setString(2, nonNullUserProfile.getName());
             statement.setInt(3, nonNullUserProfile.getId());

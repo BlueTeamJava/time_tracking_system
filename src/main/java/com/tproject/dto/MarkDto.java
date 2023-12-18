@@ -14,4 +14,5 @@ public class MarkDto {
     private int userProfileId;
     private float score;
     private Date date;
+    private String description;
 }

@@ -8,8 +8,8 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 public class TeamDto {
-    int id;
-    String teamName;
-    int teamLeadId;
+    private int id;
+    private String teamName;
+    private int teamLeadId;
 
 }

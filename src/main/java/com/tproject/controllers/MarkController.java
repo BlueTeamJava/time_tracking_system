@@ -5,7 +5,6 @@ import com.tproject.annotations.Controller;
 import com.tproject.annotations.HttpMethod;
 import com.tproject.annotations.RequestMapping;
 import com.tproject.dto.MarkDto;
-import com.tproject.dto.UserDto;
 import com.tproject.exception.CustomSQLException;
 import com.tproject.services.impl.MarkServiceImpl;
 
@@ -17,6 +16,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -67,7 +67,7 @@ public class MarkController {
                     return resp;
             }
             //get mark by id
-            else {
+            else if (req.getParameter("id") != null) {
 
                 Optional<MarkDto> markOpt = Optional.of(markService.getMarkById(Integer.parseInt(req.getParameter("id"))));
 
@@ -80,17 +80,30 @@ public class MarkController {
                     return sendError(404, "Mark not found", resp);
                 }
 
+            } else if (req.getParameter("date") != null) {
+                String dateString = req.getParameter("date");
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                Date date = dateFormat.parse(dateString);
+
+                Collection<MarkDto> marksByDate = markService.getMarkByDate(date);
+
+                resp.setContentType("application/json");
+                PrintWriter out = resp.getWriter();
+                out.print(jsonMapper.writeValueAsString(marksByDate));
+                return resp;
             }
         } catch (CustomSQLException e) {
             return sendError(500, e.getMessage(), resp);
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
+        return resp;
     }
 
     @RequestMapping(url = "/mark", method = HttpMethod.POST)
     public HttpServletResponse createMark(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         MarkDto creatingMarkDto = jsonMapper.readValue(req.getReader(), MarkDto.class);
+        System.out.println(creatingMarkDto);
         try {
             Optional<Integer> result = markService.createMark(creatingMarkDto);
             resp.setContentType("application/json");
@@ -104,7 +117,21 @@ public class MarkController {
         } catch (CustomSQLException e) {
             return sendError(500, e.getMessage(), resp);
         }
+    }
 
+    @RequestMapping(url = "/totalmarks", method = HttpMethod.GET)
+    public HttpServletResponse getTotalMarks(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try {
+            Map<Integer, Integer> totalMarksByUsers = (markService.getTotalMarksByUsers());
+
+                resp.setContentType("application/json");
+                PrintWriter out = resp.getWriter();
+                out.print(jsonMapper.writeValueAsString(totalMarksByUsers));
+                return resp;
+
+        } catch (CustomSQLException e) {
+            return sendError(500, e.getMessage(), resp);
+        }
     }
 
     @RequestMapping(url = "/mark", method = HttpMethod.PUT)
