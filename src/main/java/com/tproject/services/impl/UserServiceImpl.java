@@ -91,13 +91,13 @@ public class UserServiceImpl implements UserService {
         }
     }*/
 
-    /*public boolean deleteUser(int id) throws CustomSQLException {
+    public boolean deleteUser(int id) throws CustomSQLException {
         try {
             return userDao.deleteUser(id);
         } catch (CustomSQLException e) {
             throw e;
         }
-    }*/
+    }
 
     public boolean verifyUser(String login, String password){
         Optional<User> optionalUser = userDao.findUser(login);

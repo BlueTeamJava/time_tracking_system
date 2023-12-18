@@ -112,16 +112,16 @@ public class UserController {
 //    }
 //
 //
-//    @RequestMapping(url = "/workstation", method = HttpMethod.DELETE)
-//    public HttpServletResponse deleteUser(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-//        if (req.getParameter("id") != null) {
-//            if (userService.deleteUser(Integer.parseInt(req.getParameter("id")))) {
-//                return resp;
-//            } else {
-//                return sendError(404, "User not found", resp);
-//            }
-//        } else {
-//            return sendError(400, "User id not specified", resp);
-//        }
-//    }
+    @RequestMapping(url = "/workstation", method = HttpMethod.DELETE)
+    public HttpServletResponse deleteUser(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        if (req.getParameter("id") != null) {
+            if (userService.deleteUser(Integer.parseInt(req.getParameter("id")))) {
+                return resp;
+            } else {
+                return sendError(404, "User not found", resp);
+            }
+        } else {
+            return sendError(400, "User id not specified", resp);
+        }
+    }
 }

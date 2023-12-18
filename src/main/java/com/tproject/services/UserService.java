@@ -18,5 +18,5 @@ public interface UserService {
 
     //UserDto updateUser(final UserDto userDto)  throws CustomSQLException;
 
-    //boolean deleteUser(int id)  throws CustomSQLException;
+    boolean deleteUser(int id)  throws CustomSQLException;
 }

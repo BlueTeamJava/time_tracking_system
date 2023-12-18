@@ -13,5 +13,5 @@ public interface UserDao<T, I> {
     Collection<T> getAll();
     Optional<I> saveUser(T t);
     //User updateUser(T t);
-    //boolean deleteUser(int id);
+    boolean deleteUser(int id);
 }

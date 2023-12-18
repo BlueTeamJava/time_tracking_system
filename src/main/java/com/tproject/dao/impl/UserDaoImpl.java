@@ -218,25 +218,41 @@ public class UserDaoImpl implements UserDao<User, Integer> {
         return user;
     }*/
 
-    /*@Override
-    public boolean deleteUser(int id)  throws CustomSQLException{
-        String sql = "DELETE FROM users WHERE user_id = ?";
+    @Override
+    public boolean deleteUser(int id) throws CustomSQLException {
+        String deleteUserSql = "DELETE FROM users WHERE id = ?";
+        String deleteProfileSql = "DELETE FROM user_profile WHERE user_id = ?";
+        String deleteTasksSql = "DELETE FROM task WHERE user_id = ?";
+        String deleteMarksSql = "DELETE FROM marks WHERE user_id = ?";
 
         try (Connection conn = JdbcConnection.getInstance().getConnection();
-             PreparedStatement statement = conn.prepareStatement(sql)) {
+             PreparedStatement deleteStatementMarks = conn.prepareStatement(deleteMarksSql);
+             PreparedStatement deleteStatementProfile = conn.prepareStatement(deleteProfileSql);
+             PreparedStatement deleteStatementTasks = conn.prepareStatement(deleteTasksSql);
+             PreparedStatement deleteStatementUser = conn.prepareStatement(deleteUserSql)) {
 
-            statement.setInt(1, id);
+            deleteStatementMarks.setInt(1, id);
+            deleteStatementProfile.setInt(1, id);
+            deleteStatementTasks.setInt(1, id);
+            deleteStatementUser.setInt(1, id);
 
-            int numberOfDeletedRows = statement.executeUpdate();
+            conn.setAutoCommit(false);
 
-            LOGGER.log(Level.INFO, "Was the customer deleted successfully? {0}",
-                    numberOfDeletedRows > 0);
+            int deletedMarks = deleteStatementMarks.executeUpdate();
+            int deletedProfiles = deleteStatementProfile.executeUpdate();
+            int deletedTasks = deleteStatementTasks.executeUpdate();
+            int deletedUsers = deleteStatementUser.executeUpdate();
 
-            return numberOfDeletedRows > 0;
+            conn.commit();
+
+            LOGGER.log(Level.INFO, "User deleted: {0}, Profile deleted: {1}, Tasks deleted: {2}, Marks deleted: {3}",
+                    new Object[]{deletedUsers > 0, deletedProfiles > 0, deletedTasks, deletedMarks});
+
+            return deletedUsers > 0 || deletedProfiles > 0 || deletedTasks > 0 || deletedMarks > 0;
 
         } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
             throw new CustomSQLException("deleteUser - SQL Exception");
         }
-    }*/
+    }
 }
